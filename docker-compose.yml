@@ -1,0 +1,33 @@
+version: '3.8'
+
+services:
+  # Backend - json-server
+  backend:
+    build: .
+    container_name: cineweb-backend
+    ports:
+      - "3000:3000"
+    volumes:
+      - ./db.json:/app/db.json
+    command: npx json-server --watch db.json --port 3000 --host 0.0.0.0
+    networks:
+      - cineweb-network
+
+  # Frontend - React + Vite
+  frontend:
+    build: .
+    container_name: cineweb-frontend
+    ports:
+      - "5173:5173"
+    volumes:
+      - .:/app
+      - /app/node_modules
+    command: npm run dev -- --host 0.0.0.0
+    depends_on:
+      - backend
+    networks:
+      - cineweb-network
+
+networks:
+  cineweb-network:
+    driver: bridge
